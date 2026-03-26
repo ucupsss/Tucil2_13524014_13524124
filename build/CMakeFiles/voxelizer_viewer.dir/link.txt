@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/voxelizer_viewer.dir/src/main.cpp.o -o voxelizer_viewer  -lglfw -lGL 

@@ -1,0 +1,4 @@
+/mnt/d/Computer Science/Lecture 4/Algorithm Strategy/Tucil/Tucil2_13524014_13524124/build/CMakeFiles/voxelizer.dir
+/mnt/d/Computer Science/Lecture 4/Algorithm Strategy/Tucil/Tucil2_13524014_13524124/build/CMakeFiles/voxelizer_viewer.dir
+/mnt/d/Computer Science/Lecture 4/Algorithm Strategy/Tucil/Tucil2_13524014_13524124/build/CMakeFiles/edit_cache.dir
+/mnt/d/Computer Science/Lecture 4/Algorithm Strategy/Tucil/Tucil2_13524014_13524124/build/CMakeFiles/rebuild_cache.dir
