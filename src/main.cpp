@@ -22,6 +22,24 @@ struct AppConfig {
     bool useViewer{false};
 };
 
+fs::path findProjectRoot() {
+    fs::path current = fs::current_path();
+
+    while (!current.empty()) {
+        if (fs::exists(current / "CMakeLists.txt")) {
+            return current;
+        }
+
+        if (current == current.root_path()) {
+            break;
+        }
+
+        current = current.parent_path();
+    }
+
+    throw std::runtime_error("Gagal menemukan root proyek.");
+}
+
 void printHeader() {
     std::cout << "============================================\n"
               << "  Voxelization 3D menggunakan Octree\n"
@@ -96,7 +114,10 @@ int main(int argc, char* argv[]) {
 
         // 3. Proses Output menggunakan C++17 Filesystem
         fs::path inPath(config.inputPath);
-        fs::path outPath = inPath.parent_path() / (inPath.stem().string() + "_voxel.obj");
+        fs::path projectRoot = findProjectRoot();
+        fs::path outputDir = projectRoot / "test" / "output";
+        fs::create_directories(outputDir);
+        fs::path outPath = outputDir / (inPath.stem().string() + "_voxel_" + std::to_string(config.maxDepth) + ".obj");
 
         std::cout << "Menulis output ke " << outPath.string() << "... ";
         ObjWriter::write(outPath.string(), octree.getVoxels());

@@ -1,0 +1,4 @@
+/mnt/d/ITB/sem 4/STIMA/Tucil2_13524014_13524124/bin/CMakeFiles/voxelizer.dir
+/mnt/d/ITB/sem 4/STIMA/Tucil2_13524014_13524124/bin/CMakeFiles/voxelizer_viewer.dir
+/mnt/d/ITB/sem 4/STIMA/Tucil2_13524014_13524124/bin/CMakeFiles/edit_cache.dir
+/mnt/d/ITB/sem 4/STIMA/Tucil2_13524014_13524124/bin/CMakeFiles/rebuild_cache.dir

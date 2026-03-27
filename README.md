@@ -1,4 +1,4 @@
-# Tucil2 IF2211 - Voxelization Objek 3D menggunakan Octree
+﻿# Tucil2 IF2211 - Voxelization Objek 3D menggunakan Octree
 
 Program konversi model 3D format `.obj` menjadi representasi voxel menggunakan **Octree** dan algoritma **Divide and Conquer**. Program ini ditulis dalam bahasa **C++** dengan dukungan **concurrency** (multithreading) dan bonus **3D viewer interaktif**.
 
@@ -49,8 +49,8 @@ Sangat disarankan menggunakan **CMake** untuk menghindari bentrokan *environment
 cd Tucil2_13524014_13524124
 
 # 2. Buat folder build dan konfigurasi CMake
-mkdir build
-cd build
+mkdir bin
+cd bin
 cmake ..
 
 # 3. Lakukan kompilasi
@@ -78,8 +78,8 @@ Program dijalankan melalui Command Line Interface (CLI). Asumsi terminal berada 
 
 **Contoh Penggunaan:**
 ```bash
-./voxelizer ../test/pumpkin.obj 3
-./voxelizer_viewer ../test/pumpkin.obj 5 --view
+./voxelizer ../test/input/pumpkin.obj 3
+./voxelizer_viewer ../test/input/pumpkin.obj 5 --view
 ```
 
 ### Parameter
