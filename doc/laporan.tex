@@ -1,0 +1,1165 @@
+% ============================================================
+%  Laporan Tugas Kecil 2 IF2211 Strategi Algoritma
+%  Voxelization Objek 3D menggunakan Octree
+%  Zahran Alvan Putra Winarko - 13524124
+% ============================================================
+
+\documentclass[12pt, a4paper]{report}
+
+% ── Encoding & Bahasa ────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[bahasa]{babel}
+
+% ── Tata Letak Halaman ───────────────────────────────────────
+\usepackage[
+  top=3cm, bottom=2.5cm,
+  left=3cm, right=2.5cm
+]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% ── Font & Tipografi ─────────────────────────────────────────
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{parskip}
+\setlength{\parskip}{6pt}
+
+% ── Warna & Grafik ───────────────────────────────────────────
+\usepackage[dvipsnames, table]{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{tikz}
+
+% Warna kustom
+\definecolor{itbblue}{RGB}{0, 70, 127}
+\definecolor{codeblue}{RGB}{0, 100, 180}
+\definecolor{codegray}{RGB}{245, 245, 245}
+\definecolor{codecomment}{RGB}{100, 100, 100}
+\definecolor{codestring}{RGB}{163, 21, 21}
+\definecolor{codekeyword}{RGB}{0, 0, 255}
+
+% ── Listing (Kode Program & Pseudocode) ──────────────────────
+\usepackage{listings}
+
+\lstdefinestyle{pseudocode}{
+  backgroundcolor=\color{codegray},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape\color{codecomment},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.5pt,
+  rulecolor=\color{itbblue!40},
+  breaklines=true,
+  captionpos=b,
+  tabsize=4,
+  showstringspaces=false,
+  morekeywords={FUNGSI, JIKA, MAKA, UNTUK, DARI, HINGGA, RETURN,
+                JIKA, TIDAK, ADA, LAIN, TULIS, BACA, DAN, ATAU,
+                DIVIDE, CONQUER, PARALEL, TUNGGU, SEMUA, SELESAI,
+                SEQUENTIAL, return, true, false, and, or, not,
+                function, if, then, while, do, else},
+}
+
+\lstdefinestyle{cpp}{
+  language=C++,
+  backgroundcolor=\color{codegray},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{codekeyword}\bfseries,
+  commentstyle=\itshape\color{codecomment},
+  stringstyle=\color{codestring},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.5pt,
+  rulecolor=\color{itbblue!40},
+  breaklines=true,
+  captionpos=b,
+  tabsize=4,
+  showstringspaces=false,
+}
+
+% ── Tabel ────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{longtable}
+
+% ── Header & Footer ──────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Laporan IF2211 Strategi Algoritma}}
+\fancyhead[R]{\small\textit{Voxelization 3D menggunakan Octree}}
+\fancyfoot[C]{\small Laporan IF2211 Strategi Algoritma - Teknik Informatika ITB
+              - Semester 2 Tahun 2025/2026 \hfill \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Halaman chapter (plain style) juga punya footer
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\small Laporan IF2211 Strategi Algoritma - Teknik Informatika ITB
+                - Semester 2 Tahun 2025/2026 \hfill \thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0.4pt}
+}
+
+% ── Judul Bab & Bagian ───────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries\color{itbblue}}
+  {BAB \thechapter}{0pt}{\Large}
+\titlespacing*{\chapter}{0pt}{0pt}{20pt}
+
+\titleformat{\section}
+  {\normalfont\large\bfseries\color{itbblue}}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+
+% ── Daftar Isi ───────────────────────────────────────────────
+\usepackage{tocloft}
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\bfseries}
+\setlength{\cftbeforechapskip}{4pt}
+
+% ── Hyperlink ────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=itbblue,
+  urlcolor=itbblue,
+  citecolor=itbblue,
+  pdftitle={Laporan Tucil 2 IF2211 - Voxelization 3D},
+  pdfauthor={Zahran Alvan Putra Winarko}
+]{hyperref}
+
+% ── Algoritma (Notasi Algoritmik) ────────────────────────────
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\algrenewcommand\algorithmicprocedure{\textbf{Fungsi}}
+\algrenewcommand\algorithmicif{\textbf{Jika}}
+\algrenewcommand\algorithmicelse{\textbf{Lain}}
+\algrenewcommand\algorithmicthen{\textbf{maka}}
+\algrenewcommand\algorithmicfor{\textbf{Untuk}}
+\algrenewcommand\algorithmicdo{\textbf{lakukan}}
+\algrenewcommand\algorithmicreturn{\textbf{return}}
+\algrenewcommand\algorithmicwhile{\textbf{Selama}}
+\algrenewcommand\algorithmicend{\textbf{Akhir}}
+
+% ── Misc ─────────────────────────────────────────────────────
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{pifont}   % \ding{51} = centang
+\usepackage{mdframed}
+
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+
+% ── Info Box ─────────────────────────────────────────────────
+\newmdenv[
+  linecolor=itbblue!60,
+  linewidth=1pt,
+  backgroundcolor=itbblue!5,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  skipabove=6pt,
+  skipbelow=6pt,
+  splittopskip=\baselineskip,
+  splitbottomskip=\baselineskip,
+]{infobox}
+
+% ─────────────────────────────────────────────────────────────
+%  DOKUMEN MULAI
+% ─────────────────────────────────────────────────────────────
+\begin{document}
+
+% ── Halaman Sampul ───────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{1cm}
+
+  {\LARGE\bfseries LAPORAN TUGAS KECIL 2\\
+   IF2211 STRATEGI ALGORITMA\par}
+
+  \vspace{1.2cm}
+
+  {\Large\bfseries
+   VOXELIZATION OBJEK 3D\\
+   MENGGUNAKAN OCTREE\par}
+
+  \vspace{1.5cm}
+  % Logo ITB — ganti path jika perlu, atau hapus baris ini
+  % \includegraphics[width=4cm]{logo_itb.png}
+  % \vspace{1cm}
+
+  \vspace{0.8cm}
+  Disusun oleh:
+
+  \vspace{0.4cm}
+  \begin{tabular}{c}
+    \textbf{Yusuf Faishal Listyardi}\\
+    NIM: 13524014\\[0.5em]
+    \textbf{Zahran Alvan Putra Winarko}\\
+    NIM: 13524124
+  \end{tabular}
+
+  \vfill
+
+  {\bfseries PROGRAM STUDI TEKNIK INFORMATIKA}\\
+  SEKOLAH TEKNIK ELEKTRO DAN INFORMATIKA\\
+  INSTITUT TEKNOLOGI BANDUNG\\
+  2026
+\end{titlepage}
+
+% ── Daftar Isi / Tabel / Gambar ──────────────────────────────
+\tableofcontents
+\listoftables
+\listoffigures
+
+% =============================================================
+%  BAB 1 – PENDAHULUAN
+% =============================================================
+\chapter{Dekripsi Masalah}
+
+Representasi tiga dimensi digital pada komputer dapat dilakukan dalam berbagai
+format. Salah satu format yang paling umum adalah \textit{polygon mesh}, yaitu
+kumpulan segitiga yang membentuk permukaan objek, umumnya disimpan dalam
+format \texttt{.obj}. Di sisi lain, representasi berbasis \textit{voxel} —
+elemen volumetrik berbentuk kubus seperti piksel dalam ruang tiga dimensi —
+semakin banyak digunakan dalam berbagai aplikasi, mulai dari simulasi fisika,
+pencetakan 3D, visualisasi medis, hingga permainan video bergaya \textit{blocky}
+seperti Minecraft.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{voxel.png}
+  % \fbox{\parbox{0.85\textwidth}{\centering\vspace{2.5cm}
+  %   [Screenshot terminal: perintah + output statistik cube depth 2]
+  %   \vspace{2.5cm}}}
+  \caption{Visualisasi voxelization}
+\end{figure}
+
+\textit{Voxelization} adalah proses mengonversi objek 3D kontinu (polygon mesh)
+menjadi representasi diskrit berbasis voxel. Tantangan utamanya adalah efisiensi:
+sebuah model bisa memiliki ratusan ribu segitiga, dan menguji setiap segitiga
+terhadap setiap calon voxel secara langsung memiliki kompleksitas
+$O(F \times N^3)$ di mana $F$ adalah jumlah \textit{face} dan $N$ adalah
+resolusi tiap dimensi, yang sangat tidak praktis untuk ukuran besar.
+
+Solusi efisien untuk masalah ini adalah menggunakan struktur data \textbf{Octree}
+— sebuah pohon di mana setiap node internal memiliki tepat 8 anak — dikombinasikan
+dengan paradigma \textbf{Divide and Conquer}. Dengan Octree, ruang tiga dimensi
+dibagi secara rekursif menjadi delapan oktant hingga resolusi yang diinginkan
+tercapai, dan hanya cabang yang bersinggungan dengan permukaan objek yang
+ditelusuri lebih lanjut.
+
+
+
+% =============================================================
+%  BAB 2 – ALGORITMA
+% =============================================================
+\chapter{ALGORITMA}
+
+\section{Deskripsi Umum Program}
+
+Algoritma yang digunakan adalah \textbf{Divide and Conquer} berbasis
+\textbf{Octree}. Ide dasarnya sederhana: daripada memeriksa setiap segitiga
+terhadap setiap voxel potensial, kita memulai dari satu kotak besar yang
+mencakup seluruh model, kemudian membaginya secara rekursif menjadi delapan
+oktant yang lebih kecil. Pada setiap pembagian, kita hanya meneruskan
+segitiga-segitiga yang benar-benar berpotongan dengan oktant tersebut ke
+level berikutnya. Oktant yang tidak berisi segitiga langsung dibuang
+(\textit{pruned}), sehingga komputasi terkonsentrasi hanya pada bagian ruang
+yang benar-benar terisi permukaan objek.
+
+\section{Struktur Data Octree}
+
+Octree adalah pohon (\textit{tree}) di mana setiap node internal memiliki
+tepat \textbf{8 anak}. Setiap node merepresentasikan sebuah
+\textit{Axis-Aligned Bounding Box} (AABB) — kotak yang sisi-sisinya sejajar
+dengan sumbu koordinat X, Y, dan Z.
+
+\begin{infobox}
+\textbf{Analogi:} Bayangkan sebuah kubus besar. Jika kita belah dengan tiga
+bidang tegak lurus (masing-masing sejajar dengan sumbu X, Y, dan Z tepat di
+tengah), kita mendapatkan 8 kubus kecil berukuran setengahnya. Inilah satu
+langkah subdivisi Octree.
+\end{infobox}
+
+\subsection{Inisialisasi Root}
+
+Root AABB dihitung sebagai bounding box seluruh vertex model, kemudian
+dibuat menjadi \textbf{kubus sempurna} menggunakan sisi terpanjang dari
+ketiga dimensi (ditambah faktor \textit{padding} 0,1\%). Hal ini menjamin
+bahwa semua voxel yang dihasilkan berukuran seragam (\textit{uniform voxels}).
+
+\section{Algoritma Divide and Conquer}
+
+Algoritma bekerja dalam tiga tahap khas Divide and Conquer:
+
+\begin{description}[leftmargin=2.5cm, labelwidth=2cm]
+\item[\textbf{DIVIDE}]
+    Program terlebih dahulu membentuk \textit{root bounding box} yang
+    mencakup seluruh model 3D, lalu menyesuaikannya menjadi kubus agar
+    ukuran voxel seragam. Setelah itu, pada setiap pemanggilan
+    \texttt{buildRecursive()}, ruang AABB saat ini dibagi menjadi 8
+    sub-ruang yang lebih kecil menggunakan fungsi \texttt{subdivide()}.
+    Karena tiap sub-ruang merupakan versi lebih kecil dari persoalan
+    semula, maka proses voxelisasi dapat dipecah menjadi delapan
+    upa-persoalan yang sejenis.
+
+\item[\textbf{CONQUER}]
+    Masing-masing upa-persoalan diselesaikan dengan memeriksa segitiga
+    mana saja yang masih berpotongan dengan setiap oktan anak menggunakan
+    uji \textit{Triangle-AABB intersection} berbasis
+    \textit{Separating Axis Theorem} (SAT). Jika suatu oktan tidak lagi
+    memiliki segitiga aktif, rekursi pada cabang tersebut dihentikan
+    (\textit{pruning}). Jika kedalaman maksimum telah tercapai, AABB
+    tersebut langsung dinyatakan sebagai sebuah voxel. Jika belum,
+    prosedur yang sama dipanggil kembali secara rekursif pada setiap
+    oktan anak. Pada kedalaman awal, penyelesaian delapan sub-masalah ini
+    dapat dijalankan paralel menggunakan \texttt{std::async} agar waktu
+    komputasi lebih cepat.
+
+\item[\textbf{COMBINE}]
+    Solusi dari tiap sub-persoalan digabungkan dengan cara mengumpulkan
+    seluruh \textit{leaf node} valid hasil rekursi menjadi himpunan voxel
+    akhir program. Setiap cabang yang mencapai kondisi \textit{leaf}
+    menambahkan AABB-nya ke dalam container \texttt{voxels}, sehingga
+    gabungan semua hasil anak membentuk representasi voxel dari model
+    asli. Pada bagian paralel, seluruh \textit{thread} anak terlebih
+    dahulu disinkronkan dengan \texttt{future::get()}, sehingga hasil
+    dari kedelapan cabang benar-benar telah terkumpul sebelum proses
+    kembali ke level induknya.
+\end{description}
+
+\textbf{Kondisi basis:}
+\begin{itemize}
+  \item Jika daftar \textit{face} kosong: node di-\textit{prune},
+        dicatat sebagai node yang tidak perlu ditelusuri.
+  \item Jika \texttt{depth == maxDepth}: node dicatat sebagai
+        satu \textbf{voxel} output.
+\end{itemize}
+
+\section{Pseudocode}
+
+Berikut adalah pseudocode fungsi inti algoritma:
+
+\begin{lstlisting}[style=pseudocode,
+  caption={Pseudocode Algoritma Voxelization Divide and Conquer},
+  label={lst:pseudo}]
+FUNGSI build():
+    Hitung AABB root dari seluruh vertex model
+    Jadikan root berbentuk kubus sempurna (padding 0.1%)
+    allFaces <- [0, 1, 2, ..., F-1]
+    buildRecursive(rootAABB, allFaces, depth = 0)
+
+FUNGSI buildRecursive(box, faces, depth):
+    // Catat statistik node yang terbentuk
+    JIKA depth > 0 MAKA
+        nodesFormed[depth]++
+
+    // BASIS 1: Tidak ada permukaan pada area ini
+    JIKA faces KOSONG MAKA
+        JIKA depth > 0 MAKA
+            nodesSkipped[depth]++
+        RETURN
+
+    // BASIS 2: Kedalaman maksimum tercapai
+    JIKA depth == maxDepth MAKA
+        tambahkan box ke daftar voxels
+        voxelCount++
+        RETURN
+
+    // DIVIDE: Bagi box saat ini menjadi 8 upa-persoalan
+    subBoxes[8] <- box.subdivide()
+    childFaces[8] <- array of list kosong
+
+    // Persiapkan data untuk tiap sub-persoalan
+    UNTUK setiap faceIdx dalam faces:
+        v0, v1, v2 <- vertex dari face[faceIdx]
+        UNTUK i dari 0 hingga 7:
+            JIKA subBoxes[i].intersectsTriangle(v0, v1, v2) MAKA
+                tambahkan faceIdx ke childFaces[i]
+
+    // CONQUER: Selesaikan masing-masing upa-persoalan
+    JIKA depth < PARALLEL_DEPTH_LIMIT MAKA
+        UNTUK i dari 0 hingga 7:
+            threads[i] <- async(buildRecursive(subBoxes[i],
+                                               childFaces[i],
+                                               depth + 1))
+        UNTUK i dari 0 hingga 7:
+            tunggu threads[i] selesai
+    JIKA TIDAK MAKA
+        UNTUK i dari 0 hingga 7:
+            buildRecursive(subBoxes[i], childFaces[i], depth + 1)
+
+    // COMBINE: Hasil dari seluruh anak tergabung dalam daftar voxels
+    // karena setiap leaf valid menambahkan box-nya ke container global
+    RETURN
+
+AKHIR FUNGSI
+
+\end{lstlisting}
+
+\section{Uji Interseksi Triangle-AABB: Separating Axis Theorem}
+
+Untuk menentukan apakah sebuah segitiga berpotongan dengan sebuah
+\textit{Axis-Aligned Bounding Box} (AABB), program ini menggunakan
+\textit{Separating Axis Theorem} (SAT). Teorema ini menyatakan bahwa dua
+buah bangun konveks \textbf{tidak berpotongan jika dan hanya jika}
+terdapat minimal satu sumbu di mana proyeksi kedua bangun \textbf{tidak
+saling tumpang-tindih}. Sebaliknya, jika pada seluruh sumbu kandidat
+proyeksinya selalu saling bertumpang-tindih, maka kedua objek tersebut
+berpotongan.
+
+Dalam konteks program ini, dua objek yang diuji adalah:
+\begin{enumerate}
+  \item sebuah \textbf{segitiga} yang merepresentasikan salah satu face
+  dari model 3D, dan
+  \item sebuah \textbf{AABB} yang merepresentasikan ruang voxel atau
+  subruang octree yang sedang diperiksa.
+\end{enumerate}
+
+Tujuan pengujian ini adalah menentukan apakah suatu face masih relevan
+untuk diteruskan ke suatu oktan. Jika segitiga tidak berpotongan dengan
+AABB suatu oktan, maka face tersebut tidak perlu diproses lebih lanjut
+pada cabang tersebut.
+
+\subsection{Ide Dasar Pengujian}
+
+Pengujian dilakukan dengan cara memproyeksikan segitiga dan AABB ke
+sejumlah sumbu kandidat. Pada setiap sumbu, akan diperiksa apakah
+interval proyeksi keduanya saling overlap. Apabila ditemukan satu saja
+sumbu yang menghasilkan interval tidak overlap, maka sumbu tersebut
+menjadi \textit{separating axis}, sehingga segitiga dan AABB dipastikan
+tidak berpotongan.
+
+Dengan kata lain:
+\begin{itemize}
+  \item jika ada sumbu pemisah, hasil interseksi adalah \texttt{false},
+  \item jika tidak ada satu pun sumbu pemisah, hasil interseksi adalah
+  \texttt{true}.
+\end{itemize}
+
+Karena baik segitiga maupun AABB merupakan bangun konveks, SAT dapat
+diterapkan secara tepat dan efisien.
+
+\subsection{Mengapa Menggunakan AABB?}
+
+AABB adalah \textit{bounding box} yang sisinya selalu sejajar terhadap
+sumbu koordinat X, Y, dan Z. Bentuk ini dipilih karena:
+\begin{enumerate}
+  \item representasinya sederhana, cukup dengan titik minimum dan
+  maksimum,
+  \item pembagian ruang menjadi delapan oktan dapat dilakukan dengan
+  mudah,
+  \item pengujian proyeksi terhadap sumbu X, Y, dan Z menjadi sangat
+  efisien.
+\end{enumerate}
+
+Pada implementasi, AABB dinyatakan dengan dua titik:
+\[
+\texttt{min} = (x_{\min}, y_{\min}, z_{\min}), \qquad
+\texttt{max} = (x_{\max}, y_{\max}, z_{\max})
+\]
+Dari dua titik ini dapat dihitung:
+\begin{itemize}
+  \item titik tengah AABB (\textit{center}),
+  \item setengah ukuran box pada tiap sumbu (\textit{half extents}).
+\end{itemize}
+
+Segitiga kemudian ditranslasikan relatif terhadap pusat AABB agar
+perhitungan proyeksi menjadi lebih sederhana.
+
+\subsection{Tiga Belas Sumbu Kandidat}
+
+Untuk pasangan segitiga dan AABB, terdapat \textbf{13 sumbu kandidat}
+yang perlu diuji, yaitu:
+
+\begin{enumerate}
+  \item \textbf{3 sumbu normal face AABB}, yaitu sumbu X, Y, dan Z.
+
+  Sumbu-sumbu ini digunakan untuk memeriksa apakah segitiga berada
+  sepenuhnya di sebelah kiri/kanan, bawah/atas, atau depan/belakang box.
+  Jika pada salah satu sumbu ini proyeksinya tidak overlap, maka
+  interseksi langsung gagal.
+
+  \item \textbf{1 sumbu normal bidang segitiga}.
+
+  Sumbu ini diperoleh dari \textit{cross product} dua sisi segitiga.
+  Pengujian pada sumbu ini memastikan apakah AABB dan bidang segitiga
+  saling memotong atau berada pada sisi yang terpisah.
+
+  \item \textbf{9 sumbu hasil cross product} antara 3 sumbu AABB dan 3
+  sisi segitiga.
+
+  Sumbu-sumbu ini diperlukan untuk menangani kasus ketika segitiga dan
+  box tampak overlap pada sumbu utama X, Y, Z, tetapi sebenarnya tetap
+  terpisah jika dilihat dari arah miring tertentu. Inilah bagian penting
+  dari SAT yang membuat pengujian menjadi akurat untuk objek 3D.
+\end{enumerate}
+
+
+\subsection{Langkah Pengujian dalam Implementasi}
+
+Secara umum, fungsi interseksi bekerja sebagai berikut:
+\begin{enumerate}
+  \item Hitung pusat AABB dan \textit{half extents}-nya.
+  \item Translasi ketiga titik segitiga agar relatif terhadap pusat
+  AABB.
+  \item Hitung tiga vektor sisi segitiga.
+  \item Uji 9 sumbu hasil \textit{cross product}.
+  \item Uji 3 sumbu utama AABB, yaitu X, Y, dan Z.
+  \item Uji 1 sumbu normal bidang segitiga.
+  \item Jika semua pengujian lolos, maka segitiga dan AABB dinyatakan
+  berpotongan.
+\end{enumerate}
+
+Setiap pengujian sumbu pada dasarnya membandingkan dua interval:
+\begin{itemize}
+  \item interval proyeksi tiga titik segitiga pada sumbu tersebut,
+  \item interval proyeksi AABB pada sumbu yang sama.
+\end{itemize}
+
+Untuk segitiga, interval diperoleh dari nilai minimum dan maksimum hasil
+\textit{dot product} titik-titik segitiga terhadap sumbu uji. Untuk
+AABB, karena box berpusat di origin setelah translasi, jari-jari
+proyeksinya dapat dihitung langsung dari kombinasi \textit{half extents}
+dan nilai absolut komponen sumbu.
+
+Jika interval segitiga berada sepenuhnya di luar interval AABB, maka
+ditemukan sumbu pemisah dan fungsi segera mengembalikan
+\texttt{false}.
+
+Implementasi pada program ini mengikuti algoritma Möller (2001), dengan
+optimasi kecil seperti penggunaan \texttt{std::min} dan \texttt{std::max}
+bersarang untuk menghindari alokasi \texttt{initializer\_list} berulang.
+Dengan demikian, uji interseksi tetap cukup cepat meskipun dieksekusi
+dalam jumlah besar selama pembentukan octree.
+
+
+\section{Analisis Kompleksitas}
+
+\subsection{Kompleksitas Waktu}
+
+\begin{itemize}
+  \item \textbf{Kasus terbaik:} $O(F)$ — semua face berada di satu
+        oktant, tidak ada subdivisi lanjutan.
+  \item \textbf{Kasus rata-rata:} $O(F \cdot \log_8 N)$ — distribusi
+        normal pada permukaan objek. Di sini $N = 8^n$ adalah jumlah
+        voxel maksimal pada kedalaman $n$.
+  \item \textbf{Kasus terburuk:} $O(F \cdot 8^n)$ — setiap face
+        melintas semua oktant di setiap level. Tidak terjadi pada
+        model nyata.
+\end{itemize}
+
+Tanpa optimasi, total node Octree adalah $\sum_{d=0}^{n} 8^d =
+\frac{8^{n+1}-1}{7}$. Dengan \textit{pruning}, hanya node yang
+bersinggungan dengan permukaan yang dikunjungi, sehingga jumlah
+node aktual jauh lebih kecil.
+
+\subsection{Kompleksitas Ruang}
+
+$O(F + V)$ di mana $F$ adalah jumlah face aktif dalam rekursi saat ini
+dan $V$ adalah jumlah voxel yang terbentuk. \textit{Stack} rekursi
+memiliki kedalaman maksimal $n$ (parameter \texttt{maxDepth}).
+
+\begin{table}[H]
+  \centering
+  \caption{Analisis Kompleksitas Waktu Algoritma}
+  \label{tab:complexity}
+  \begin{tabular}{lll}
+    \toprule
+    \textbf{Kasus} & \textbf{Kompleksitas Waktu} & \textbf{Keterangan} \\
+    \midrule
+    Terbaik  & $O(F)$                & Semua face di satu oktant \\
+    Rata-rata & $O(F \cdot \log_8 N)$ & Distribusi normal permukaan \\
+    Terburuk  & $O(F \cdot 8^n)$      & Setiap face melintas semua oktant \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+
+% =============================================================
+%  BAB 3 – IMPLEMENTASI
+% =============================================================
+\chapter{IMPLEMENTASI}
+
+\section{Bahasa dan Tools}
+
+\begin{table}[H]
+  \centering
+  \caption{Stack Teknologi yang Digunakan}
+  \label{tab:tech}
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \textbf{Komponen} & \textbf{Detail} \\
+    \midrule
+    Bahasa       & C++17 \\
+    Build System & CMake 3.14+ / Makefile \\
+    Concurrency  & \texttt{std::async}, \texttt{std::future},
+                   \texttt{std::mutex} (C++ Standard Library) \\
+    Viewer       & OpenGL 1.x (Legacy), GLFW3 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{Struktur Program}
+
+\subsection{Organisasi File}
+
+\begin{table}[H]
+  \centering
+  \caption{Deskripsi Setiap File Source Code}
+  \label{tab:files}
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \textbf{File} & \textbf{Deskripsi} \\
+    \midrule
+    \texttt{Vec3.hpp}
+      & Struct vektor 3D dengan operasi dot, cross, normalize,
+        dan operator overloading (\texttt{+}, \texttt{-}, \texttt{*}).
+        Menggunakan \texttt{constexpr} dan \texttt{[[nodiscard]]}. \\[4pt]
+
+    \texttt{AABB.hpp}
+      & Struct \textit{Axis-Aligned Bounding Box}: fungsi
+        \texttt{center()}, \texttt{halfExtents()},
+        \texttt{intersectsTriangle()} (SAT Möller), dan
+        \texttt{subdivide()} ke 8 oktant. \\[4pt]
+
+    \texttt{ObjModel.hpp}
+      & Container sederhana untuk daftar \textit{vertex} dan
+        \textit{face} hasil parsing. \\[4pt]
+
+    \texttt{ObjParser.hpp}
+      & Namespace \texttt{ObjParser}: baca file \texttt{.obj},
+        tangani format \texttt{v/vt/vn}, fan triangulation
+        untuk poligon $>3$ vertex, validasi indeks. \\[4pt]
+
+    \texttt{Octree.hpp}
+      & Kelas utama: algoritma D\&C, \texttt{std::async}
+        concurrency, pengumpulan voxel, dan statistik
+        \textit{nodesFormed}/\textit{nodesSkipped}. \\[4pt]
+
+    \texttt{ObjWriter.hpp}
+      & Namespace \texttt{ObjWriter}: tulis voxel (AABB) ke
+        file \texttt{.obj} — 8 vertex + 12 segitiga per voxel. \\[4pt]
+
+    \texttt{Viewer.hpp}
+      & Viewer 3D OpenGL/GLFW: orbit camera, render solid
+        + wireframe, toggle model asli (efek X-Ray),
+        implementasi manual \textit{LookAt} tanpa GLU. \\[4pt]
+
+    \texttt{main.cpp}
+      & Entry point: parsing argumen CLI,
+        orkestrasi pipeline, output statistik. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{Modul \texttt{Vec3.hpp}}
+
+Struct \texttt{Vec3} menyimpan koordinat \texttt{(x, y, z)} bertipe
+\texttt{double} dan menyediakan operasi-operasi dasar vektor 3D yang
+dibutuhkan oleh AABB dan renderer:
+
+\begin{itemize}
+  \item \texttt{operator+}, \texttt{operator-}, \texttt{operator*}
+        — operasi aritmetika per-komponen.
+  \item \texttt{dot()} — hasil kali titik, digunakan pada uji SAT.
+  \item \texttt{cross()} — hasil kali silang, digunakan untuk menghitung
+        normal bidang segitiga dan sumbu LookAt.
+  \item \texttt{normalize()} — normalisasi dengan pengecekan panjang $> 0$.
+  \item \texttt{operator<<} — overload untuk output stream langsung.
+\end{itemize}
+
+Seluruh operasi aritmetika dideklarasikan \texttt{constexpr} sehingga dapat
+dievaluasi pada \textit{compile time} jika operand diketahui.
+
+\section{Modul \texttt{AABB.hpp}}
+
+\subsection{Fungsi \texttt{intersectsTriangle}}
+
+Implementasi SAT sesuai Möller (2001) yang sudah dioptimasi.
+Menggunakan \texttt{std::min}/\texttt{std::max} bersarang (bukan
+\texttt{initializer\_list}) untuk menghindari alokasi heap berulang pada
+loop rekursif yang intensif.
+
+\subsection{Fungsi \texttt{subdivide}}
+
+Mengembalikan \texttt{std::array<AABB, 8>} (bukan \texttt{vector}) sehingga
+8 oktant anak dialokasikan di \textit{stack} tanpa overhead heap.
+
+\section{Modul \texttt{Octree.hpp}}
+
+Kelas \texttt{Octree} adalah inti program. Atribut utamanya:
+
+\begin{itemize}
+  \item \texttt{model} — referensi ke model yang di-parse.
+  \item \texttt{maxDepth} — kedalaman rekursi maksimum.
+  \item \texttt{voxels} — vektor AABB hasil akhir.
+  \item \texttt{stats} — struct berisi \texttt{nodesFormed[]},
+        \texttt{nodesSkipped[]}, dan \texttt{voxelCount}.
+  \item \texttt{voxelMutex}, \texttt{statsMutex} — mutex untuk
+        \textit{thread-safe access} saat concurrency aktif.
+\end{itemize}
+
+\subsection{Fungsi \texttt{build()}}
+
+Menghitung bounding box seluruh model, membuat root AABB menjadi kubus
+sempurna, mengisi \texttt{allFaces} menggunakan \texttt{std::iota},
+dan memulai rekursi.
+
+\subsection{Fungsi \texttt{buildRecursive()}}
+
+Implementasi inti D\&C yang dijelaskan pada pseudocode di Bab 2.
+Kunci desainnya adalah penggunaan \texttt{std::async} dengan
+\texttt{std::launch::async} hanya ketika \texttt{depth < PARALLEL\_DEPTH\_LIMIT}
+(= 2). Pada dua level teratas ini, hingga $8^2 = 64$ thread dapat
+berjalan paralel, memberikan speedup nyata pada mesin multi-core.
+
+\begin{lstlisting}[style=cpp, caption={Potongan implementasi concurrency},
+  label={lst:async}]
+if (currentDepth < PARALLEL_DEPTH_LIMIT) {
+    std::array<std::future<void>, 8> threads;
+    for (int i = 0; i < 8; ++i) {
+        threads[i] = std::async(std::launch::async,
+            [this, &subBoxes, &facesPerOktant, currentDepth, i]() {
+                buildRecursive(subBoxes[i],
+                               facesPerOktant[i],
+                               currentDepth + 1);
+            });
+    }
+    // Barrier: tunggu semua thread selesai
+    for (auto& t : threads) t.get();
+} else {
+    for (int i = 0; i < 8; ++i)
+        buildRecursive(subBoxes[i], facesPerOktant[i], currentDepth + 1);
+}
+\end{lstlisting}
+
+\section{Modul \texttt{Viewer.hpp} (Bonus)}
+
+Viewer dikompilasi secara kondisional dengan flag
+\texttt{-DENABLE\_VIEWER}. Desain utamanya:
+
+\begin{itemize}
+  \item \textbf{Orbit camera:} State kamera disimpan dalam struct
+        \texttt{ViewerState} yang diakses melalui pointer global
+        (diperlukan karena callback GLFW bertipe function pointer C).
+  \item \textbf{Manual LookAt:} Fungsi \texttt{applyLookAtMatrix()}
+        diimplementasikan tanpa bergantung pada GLU agar kompatibel
+        dengan Windows/MinGW yang sering tidak menyertakan GLU.
+  \item \textbf{Efek X-Ray:} Saat toggle T aktif, model asli digambar
+        dua kali — sekali sebelum voxel (tertimbun) dan sekali sesudah
+        dengan \texttt{GL\_DEPTH\_TEST} dimatikan — menghasilkan efek
+        \textit{tembus pandang}.
+  \item \textbf{Reset otomatis:} \texttt{g\_state = ViewerState\{\}}
+        mereset kamera setiap kali viewer dibuka.
+\end{itemize}
+
+\section{Modul \texttt{main.cpp}}
+
+Entry point memisahkan logika parsing argumen ke fungsi
+\texttt{parseArguments()} yang mengembalikan struct \texttt{AppConfig},
+sehingga fungsi \texttt{main()} hanya berperan sebagai orkestrator
+pipeline yang mudah dibaca.
+
+\section{Cara Kompilasi dan Menjalankan Program}
+
+\subsection{Kompilasi}
+
+\begin{lstlisting}[style=pseudocode, numbers=none,
+  caption={Cara kompilasi program}]
+# Linux/Mac -- Tanpa viewer
+mkdir -p bin
+g++ -std=c++17 -O2 -o bin/voxelizer src/main.cpp -lpthread
+
+# Linux -- Dengan viewer (GLFW harus terinstal)
+g++ -std=c++17 -O2 -DENABLE_VIEWER -o bin/voxelizer_viewer \
+    src/main.cpp -lpthread -lGL -lGLU -lglfw
+
+# Windows (MSYS2/MinGW) -- Tanpa viewer
+g++ -std=c++17 -O2 -o bin/voxelizer.exe src/main.cpp -lpthread
+\end{lstlisting}
+
+\subsection{Menjalankan Program}
+
+\begin{lstlisting}[style=pseudocode, numbers=none,
+  caption={Cara menjalankan program}]
+# Tanpa viewer
+./bin/voxelizer <path_file.obj> <max_depth>
+
+# Dengan viewer
+./bin/voxelizer_viewer <path_file.obj> <max_depth> --view
+
+# Contoh
+./bin/voxelizer test/input/cube.obj 3
+./bin/voxelizer_viewer test/input/pumpkin.obj 6 --view
+\end{lstlisting}
+
+\subsection{Kontrol Viewer}
+
+\begin{table}[H]
+  \centering
+  \caption{Kontrol Viewer 3D Interaktif}
+  \label{tab:viewer}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Input} & \textbf{Aksi} \\
+    \midrule
+    Drag kiri mouse & Rotasi kamera (orbit) \\
+    Scroll         & Zoom in/out \\
+    Tombol T        & Toggle tampilkan model asli (efek X-Ray) \\
+    Q / ESC         & Keluar viewer \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Penjelasan Implementasi}
+
+Implementasi utama program terletak pada kelas \texttt{Octree},
+khususnya pada method \texttt{build()} dan \texttt{buildRecursive()}.
+Kedua fungsi ini berperan dalam membangun struktur octree dan menghasilkan
+voxel dari model 3D masukan.
+
+Proses dimulai pada method \texttt{build()}, yaitu dengan menghitung
+\textit{bounding box} yang mencakup seluruh vertex model. Selanjutnya,
+\textit{bounding box} tersebut diubah menjadi kubus sempurna agar seluruh
+voxel yang dihasilkan memiliki ukuran yang seragam. Setelah itu, program
+menyusun daftar seluruh face pada model dan memulai proses rekursif dari
+node akar dengan memanggil \texttt{buildRecursive()}.
+
+Method \texttt{buildRecursive()} merepresentasikan inti algoritma
+\textit{Divide and Conquer}. Pada setiap pemanggilan, fungsi menerima
+sebuah AABB, himpunan face aktif yang masih berpotongan dengan area
+tersebut, serta kedalaman saat ini. Jika himpunan face kosong, maka
+cabang tersebut langsung dihentikan karena tidak mengandung bagian
+permukaan objek. Jika kedalaman maksimum telah tercapai, AABB tersebut
+langsung dicatat sebagai sebuah voxel.
+
+Jika kedua kondisi tersebut belum terpenuhi, maka AABB saat ini dibagi
+menjadi 8 oktan menggunakan fungsi \texttt{subdivide()}. Selanjutnya,
+setiap face aktif diperiksa terhadap masing-masing oktan anak. Face yang
+berpotongan dengan suatu oktan akan diteruskan ke node anak tersebut.
+Dengan cara ini, setiap submasalah hanya memproses face yang relevan
+dengan wilayah ruangnya.
+
+Proses rekursif ini terus berlanjut hingga seluruh cabang mencapai kondisi
+berhenti. Hasil akhirnya diperoleh dengan mengumpulkan seluruh
+\textit{leaf node} yang valid ke dalam daftar \texttt{voxels}. Daftar
+inilah yang kemudian menjadi representasi voxel dari model 3D awal.
+
+Secara keseluruhan, implementasi ini memanfaatkan struktur octree untuk
+membagi ruang secara bertahap dan hanya memproses bagian ruang yang
+berkaitan dengan permukaan objek, sehingga proses voxelisasi menjadi lebih
+efisien.
+
+\section{Penjelasan Implementasi Spesifikasi Bonus}
+
+\subsection{Bonus Concurrency}
+
+Implementasi \textit{concurrency} terdapat pada kelas \texttt{Octree},
+tepatnya di dalam method \texttt{buildRecursive()}. Pada proses
+pembentukan octree, setiap node yang belum mencapai kondisi basis akan
+dibagi menjadi 8 oktan. Delapan oktan ini merupakan submasalah yang
+bersifat independen, sehingga dapat diproses secara bersamaan.
+
+Pada implementasinya, ketika kedalaman rekursi masih lebih kecil dari
+\texttt{PARALLEL\_DEPTH\_LIMIT}, pemrosesan kedelapan anak dijalankan
+secara paralel menggunakan \texttt{std::async}. Setiap pemanggilan
+\texttt{buildRecursive()} untuk satu oktan anak dibungkus dalam sebuah
+\textit{task} asynchronous, lalu hasilnya disimpan dalam
+\texttt{std::future}. Setelah seluruh \textit{task} dijalankan, program
+menunggu semuanya selesai dengan memanggil \texttt{get()} pada setiap
+\textit{future}.
+
+Pendekatan ini dipilih karena pada level atas octree jumlah face yang
+masih aktif umumnya besar, sehingga pemrosesan paralel dapat mempercepat
+waktu eksekusi. Namun, paralelisme tidak diterapkan pada seluruh level.
+Program membatasi concurrency hanya sampai kedalaman tertentu agar tidak
+terjadi \textit{thread explosion} dan overhead yang terlalu besar.
+Setelah melewati batas tersebut, rekursi dilanjutkan secara sekuensial.
+
+Karena daftar voxel dan statistik dapat diakses oleh beberapa
+\textit{thread} secara bersamaan, implementasi juga menggunakan
+\texttt{mutex} untuk menjaga konsistensi data ketika menambahkan voxel
+ke container hasil maupun saat memperbarui statistik node.
+
+\subsection{Bonus Viewer 3D}
+
+Implementasi \textit{viewer} 3D terdapat pada file \texttt{Viewer.hpp}
+dan diaktifkan melalui target \texttt{voxelizer\_viewer}. Setelah proses
+voxelisasi selesai, program dapat menampilkan model hasil dalam jendela
+interaktif apabila dijalankan dengan flag \texttt{--view}.
+
+Viewer dibangun menggunakan OpenGL dan GLFW. Data utama yang ditampilkan
+adalah kumpulan voxel hasil konversi, yaitu daftar \texttt{AABB} yang
+dihasilkan oleh octree. Setiap voxel divisualisasikan sebagai kubus 3D
+dengan memanfaatkan fungsi \texttt{drawCube()}, sehingga pengguna dapat
+melihat bentuk model hasil voxelisasi secara langsung.
+
+Selain voxel, viewer juga dapat menampilkan model asli secara transparan
+sebagai pembanding. Fitur ini membantu pengguna melihat seberapa baik
+hasil voxelisasi merepresentasikan bentuk objek awal. Pada implementasi,
+viewer menerima baik daftar voxel maupun data model asli, lalu
+merender keduanya dalam satu scene 3D.
+
+Interaksi pengguna juga disediakan agar tampilan tidak bersifat statis.
+Kamera dapat diputar dengan mekanisme \textit{orbit}, zoom dapat diatur
+menggunakan \textit{scroll mouse}, dan beberapa mode tampilan dapat
+diubah melalui input keyboard, seperti menampilkan atau menyembunyikan
+model asli serta mengganti mode \textit{wireframe}. Dengan demikian,
+hasil voxelisasi tidak hanya disimpan ke file \texttt{.obj}, tetapi juga
+dapat diamati secara visual dan interaktif langsung dari program.
+
+
+
+
+% =============================================================
+%  BAB 4 – EKSPERIMEN
+% =============================================================
+\chapter{EKSPERIMEN}
+
+% ── Pengujian 1 ───────────────────────────────────────────────
+\subsection{Test Case 1: \texttt{cow.obj} (depth = 4)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{cowcli.png}
+  % \fbox{\parbox{0.85\textwidth}{\centering\vspace{2.5cm}
+  %   [Screenshot terminal: perintah + output statistik cube depth 2]
+  %   \vspace{2.5cm}}}
+  \caption{Input dan output CLI untuk cow.obj (depth = 4)}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{cow3d.png}
+  % \fbox{\parbox{0.7\textwidth}{\centering\vspace{3cm}
+  %   [Screenshot hasil voxel cube.obj di viewer / OBJ viewer]
+  %   \vspace{3cm}}}
+  \caption{Hasil voxelization cow.obj (depth = 4)}
+\end{figure}
+
+% ── Pengujian 2 ───────────────────────────────────────────────
+\subsection{Test Case 2: \texttt{house.obj} (depth = 6)}
+
+\begin{figure}[H]
+    \centering
+  \includegraphics[width=0.85\textwidth]{housecli.png}
+  % \fbox{\parbox{0.85\textwidth}{\centering\vspace{2.5cm}
+  %   [Screenshot terminal: perintah + output statistik cube depth 2]
+  %   \vspace{2.5cm}}}
+  \caption{Input dan output CLI untuk house.obj (depth = 6)}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.7\textwidth]{house3d.png}
+  % \fbox{\parbox{0.85\textwidth}{\centering\vspace{2.5cm}
+  %   [Screenshot terminal + hasil voxel house.obj depth 4]
+  %   \vspace{2.5cm}}}
+  \caption{Hasil voxelization house.obj (house = 6)}
+\end{figure}
+
+% ── Pengujian 3 ───────────────────────────────────────────────
+\subsection{Test Case 3: \texttt{line.obj} (depth = 3)}
+
+\begin{figure}[H]
+    \centering
+  \includegraphics[width=0.85\textwidth]{linecli'.png}
+  % \fbox{\parbox{0.85\textwidth}{\centering\vspace{2.5cm}
+  %   [Screenshot terminal: perintah + output statistik cube depth 2]
+  %   \vspace{2.5cm}}}
+  \caption{Input dan output CLI untuk line.obj (depth = 3)}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.7\textwidth]{line3d.png}
+  % \fbox{\parbox{0.85\textwidth}{\centering\vspace{2.5cm}
+  %   [Screenshot terminal + hasil voxel house.obj depth 4]
+  %   \vspace{2.5cm}}}
+  \caption{Hasil voxelization line.obj (depth = 3)}
+\end{figure}
+
+% ── Pengujian 5 ───────────────────────────────────────────────
+\subsection{Test Case 4: \texttt{pumpkin.obj} (depth = 5)}
+
+\begin{figure}[H]
+    \centering
+  \includegraphics[width=0.85\textwidth]{pumpcli.png}
+  % \fbox{\parbox{0.85\textwidth}{\centering\vspace{2.5cm}
+  %   [Screenshot terminal: perintah + output statistik cube depth 2]
+  %   \vspace{2.5cm}}}
+  \caption{Input dan output CLI untuk pumpkin.obj (depth = 5)}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.7\textwidth]{pump3d.png}
+  % \fbox{\parbox{0.85\textwidth}{\centering\vspace{2.5cm}
+  %   [Screenshot terminal + hasil voxel house.obj depth 4]
+  %   \vspace{2.5cm}}}
+  \caption{Hasil voxelization pumpkin.obj (line = 5)}
+\end{figure}
+
+\subsection{Test Case 5: \texttt{teapot.obj} (depth = 7)}
+
+\begin{figure}[H]
+    \centering
+  \includegraphics[width=0.85\textwidth]{teapotcli.png}
+  % \fbox{\parbox{0.85\textwidth}{\centering\vspace{2.5cm}
+  %   [Screenshot terminal: perintah + output statistik cube depth 2]
+  %   \vspace{2.5cm}}}
+  \caption{Input dan output CLI untuk teapot.obj (depth = 7)}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.7\textwidth]{teapot3d.png}
+  % \fbox{\parbox{0.85\textwidth}{\centering\vspace{2.5cm}
+  %   [Screenshot terminal + hasil voxel house.obj depth 4]
+  %   \vspace{2.5cm}}}
+  \caption{Hasil voxelization teapot.obj (depth = 7)}
+\end{figure}
+
+
+% =============================================================
+%  BAB 5 – KESIMPULAN DAN SARAN
+% =============================================================
+\chapter{Penutup}
+
+\section{Kesimpulan}
+
+Dari pengerjaan Tugas Kecil 2 ini, dapat diambil beberapa kesimpulan yaitu, program voxelization 3D berhasil diimplementasikan menggunakan algoritma
+Divide and Conquer berbasis Octree dalam bahasa C++17. Algoritma bekerja
+dengan membagi ruang secara rekursif menjadi 8 oktant, memangkas oktant
+yang tidak berisi permukaan (\textit{pruning}), dan menghasilkan voxel pada
+leaf node yang bersinggungan dengan segitiga model. Implementasi terbukti
+menghasilkan output yang benar dan seragam (\textit{uniform voxels}).
+
+Pruning berdasarkan hasil uji SAT secara signifikan mengurangi jumlah node
+yang dikunjungi dibandingkan traversal penuh. Pada model dengan permukaan
+tipis (\textit{thin shell}), hanya sebagian kecil dari $8^n$ node maksimal
+yang benar-benar diproses.
+
+Selain itu Penggunaan \texttt{std::async} pada dua level kedalaman teratas Octree
+memberikan speedup nyata pada mesin multi-core tanpa memerlukan library
+eksternal. Batas \texttt{PARALLEL\_DEPTH\_LIMIT = 2} mencegah
+\textit{thread explosion} di kedalaman bawah.
+
+Viewer interaktif berbasis OpenGL/GLFW memudahkan verifikasi visual hasil
+voxelization. Implementasi manual \textit{LookAt} tanpa GLU meningkatkan
+portabilitas di berbagai platform.
+
+
+\section{Saran}
+Pelaksanaan Tugas Kecil 2 IF2211 Strategi Algoritma di Semester II (Genap)
+Tahun 2024/2025 merupakan pengalaman yang sangat berharga bagi kami. Dari
+pengalaman ini, kami ingin berbagi beberapa saran kepada pembaca yang mungkin
+akan menghadapi tugas serupa di masa depan:
+\begin{infobox}
+\textbf{Ucup:}
+Terimakasih asisten yang sudah memberi tucil di tengah libur lebaran.
+\end{infobox}
+
+\begin{infobox}
+\textbf{Alvan:} Saya pikir tubes ini didesain kepada kita untuk melatih
+diri menghadapi tekanan deadline yang mungkin nanti ketika di industri
+akan relate. Namun, tugas ini sebaiknya dikerjakan sesegera mungkin.
+Dengan waktu kurang lebih 2 minggu saya merasa cukup chaos menghadapi
+tugas-tugas yang ada. Rasa-rasanya setelah tugas ini selesai pun
+ketenangan tidak serta merta menghampiri, terpaan deadline selalu
+menghantui. Pagi, siang malam, dilanda ketakutan akan tugas. Bingung
+memikir bagaimana ku menghadapinya. Namun, aku memiliki solusi dan saran
+kepadamu, ``Sebaiknya kalo ada tugas minimal di-extend 5 hari''.
+\end{infobox}
+
+% =============================================================
+%  LAMPIRAN
+% =============================================================
+\section{Tautan}
+
+Seluruh implementasi kode program tersedia di repository GitHub:
+
+\begin{infobox}
+\textbf{Repository:}
+\texttt{https://github.com/ucupsss/Tucil2\_13524014\_13524124}
+
+\end{infobox}
+
+\section{Lampiran}
+
+Berikut adalah tabel checklist pemenuhan spesifikasi tugas:
+
+\vspace{0.5cm}
+\begin{table}[H]
+  \centering
+  \begin{tabular}{clcc}
+    \toprule
+    \textbf{No} & \textbf{Poin} & \textbf{Ya} & \textbf{Tidak} \\
+    \midrule
+    1 & Program berhasil dikompilasi tanpa kesalahan
+      & \cmark & \\
+    2 & Program berhasil dijalankan
+      & \cmark & \\
+    3 & Hasil konversi \texttt{.obj} terdiri dari kubus-kubus kecil
+      & \cmark & \\
+    4 & Program menampilkan informasi/\textit{report} di CLI
+      & \cmark & \\
+    5 & Program menerima masukan \texttt{.obj} dan mengembalikan output
+      & \cmark & \\
+    6 & \textbf{[Bonus]} Program menggunakan \textit{concurrency}
+      & \cmark & \\
+    7 & \textbf{[Bonus]} Program memiliki \texttt{.obj} viewer
+      & \cmark & \\
+    \bottomrule
+  \end{tabular}
+  \caption{Checklist kelengkapan program}
+  \label{tab:checklist}
+\end{table}
+
+\chapter{Pernyataan tidak melakukan kecurangan yang ditandatangani}
+
+\vspace{1cm}
+\begin{mdframed}[linewidth=1pt]
+  \begin{center}
+    \textbf{PERNYATAAN}
+  \end{center}
+
+  \vspace{0.5cm}
+  Kami yang bertanda tangan di bawah ini menyatakan bahwa Tugas ini disusun sepenuhnya tanpa bantuan kecerdasan buatan (Generative AI), melainkan hasil pemikiran dan analisis mandiri.
+
+
+  \vspace{2cm}
+  \begin{flushright}
+    \begin{figure}[H]
+        \raggedleft
+      \includegraphics[width=0.3\textwidth]{ttducup.png}
+    \end{figure}
+    \textbf{Yusuf Faishal Listyardi} \\
+        \begin{figure}[H]
+        \raggedleft
+      \includegraphics[width=0.3\textwidth]{WhatsApp Image 2026-03-27 at 23.16.56.jpeg}
+    \end{figure}
+    \textbf{Zahran Alvan Putra Winarko}
+  \end{flushright}
+\end{mdframed}
+
+\end{document}
