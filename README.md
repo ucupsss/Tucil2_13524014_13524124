@@ -48,7 +48,7 @@ Sangat disarankan menggunakan **CMake** untuk menghindari bentrokan *environment
 # 1. Masuk ke direktori proyek
 cd Tucil2_13524014_13524124
 
-# 2. Buat folder build dan konfigurasi CMake
+# 2. Buat folder bin dan konfigurasi CMake
 mkdir bin
 cd bin
 cmake ..
@@ -66,7 +66,7 @@ Jika dependensi GLFW tersedia di sistem, CMake otomatis akan membangun dua file 
 
 ## Cara Menjalankan
 
-Program dijalankan melalui Command Line Interface (CLI). Asumsi terminal berada di dalam folder tempat *executable* berada (misal: `build/`
+Program dijalankan melalui Command Line Interface (CLI). Asumsi terminal berada di dalam folder tempat *executable* berada (misal: `bin/`
 
 ```bash
 # Skenario 1: Tanpa viewer
@@ -114,7 +114,7 @@ Tucil2_13524014_13524124/
 │   ├── Octree.hpp        # Algoritma Divide & Conquer + Concurrency
 │   └── Viewer.hpp        # Implementasi OpenGL/GLFW untuk Viewer (Bonus)
 │
-├── build/                # Folder hasil generate CMake (di-ignore di .gitignore)
+├── bin/                # Folder hasil generate CMake (di-ignore di .gitignore)
 ├── test/                 # Folder berisi data uji (.obj) dan hasil konversinya
 ├── doc/                  # Folder berisi Laporan Tugas Kecil (PDF)
 │
